@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Nuevo Cliente</title>
+    <%- include("partials/head") %>
+  </head>
+  <body class="bg-white text-white">
+    <%- include("partials/navigation") %>
+
+    <%
+// Fallbacks seguros para evitar ReferenceError cuando no se pasa 'cliente' o 'flash'
+const data  = (typeof cliente !== 'undefined' && cliente) || (locals && locals.cliente) || {};
+const flashMsg = (typeof flash !== 'undefined' && flash) || (locals && locals.flash) || null;
+    %>
+
+    <div class="container vh-100 d-flex justify-content-center align-items-center">
+      <div class="card animated flipInY bg-dark border-secondary shadow-sm" style="min-width: 420px;">
+        <div class="card-header bg-dark text-white text-center border-secondary">
+          <h3 class="mb-0">Registrar Cliente</h3>
+        </div>
+
+        <div class="card-body">
+          <% if (flashMsg && flashMsg.message) { %>
+            <div class="alert alert-<%= flashMsg.type || 'info' %> py-2"><%= flashMsg.message %></div>
+          <% } %>
+
+          <form
+            action="/cliente/agregar"
+            method="POST"
+            class="needs-validation"
+            novalidate
+            autocomplete="off"
+          >
+
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre completo</label>
+              <input
+                id="nombre"
+                name="nombre"
+                type="text"
+                class="form-control bg-dark text-white border-secondary"
+                placeholder="Ej.: Ana Pérez"
+                required
+                minlength="3"
+                maxlength="120"
+                pattern="^[A-Za-zÁÉÍÓÚÑáéíóúñ ]{3,120}$"
+                value="<%= data.nombre || '' %>"
+              />
+              <div class="invalid-feedback">Ingresa un nombre válido (solo letras y espacios).</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                class="form-control bg-dark text-white border-secondary"
+                placeholder="nombre@correo.com"
+                required
+                maxlength="120"
+                value="<%= data.email || '' %>"
+              />
+              <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input
+                id="telefono"
+                name="telefono"
+                type="tel"
+                class="form-control bg-dark text-white border-secondary"
+                placeholder="Ej.: 7777-7777"
+                required
+                minlength="8"
+                maxlength="30"
+                pattern="^[0-9 +()-]{8,30}$"
+                value="<%= data.telefono || '' %>"
+              />
+              <div class="invalid-feedback">Ingresa un teléfono válido (números y guiones).</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="direccion" class="form-label">Dirección</label>
+              <textarea
+                id="direccion"
+                name="direccion"
+                class="form-control bg-dark text-white border-secondary"
+                rows="3"
+                placeholder="Colonia, calle, número, referencia"
+                required
+                maxlength="200"
+              ><%= data.direccion || '' %></textarea>
+              <div class="invalid-feedback">La dirección es requerida.</div>
+            </div>
+
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">Guardar</button>
+              <a href="/cliente" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-footer bg-dark border-secondary text-center small text-secondary">
+          Completa todos los campos y presiona “Guardar”.
+        </div>
+      </div>
+    </div>
+
+    <%- include("partials/footer") %>
+
+    <script>
+      (() => {
+        "use strict";
+        const forms = document.querySelectorAll(".needs-validation");
+        Array.from(forms).forEach((form) => {
+          form.addEventListener("submit", (event) => {
+            if (!form.checkValidity()) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              const btn = form.querySelector('button[type="submit"]');
+              if (btn) { btn.disabled = true; btn.innerText = "Guardando..."; }
+            }
+            form.classList.add("was-validated");
+          }, false);
+        });
+      })();
+    </script>
+  </body>
+</html>
